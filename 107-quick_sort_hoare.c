@@ -1,70 +1,92 @@
 #include "sort.h"
 
 /**
- * partition - gives a piv index for Quicksort
- * @array: array to find the piv in
- * @left: index of the left element
- * @right: index of the right element
- * @size: size of the array
- *
- * Return: the index of the piv element
+ * swap - swaps two numbers
+ * @num1: first number
+ * @num2: second number
  */
-int partition(int *array, int left, int right, size_t size)
+void swap(int *num1, int *num2)
 {
-	int tmp, pivot = array[right];
-	size_t i, j;
+	int tmp = *num1;
 
-	i = left - 1;
-	j = right + 1;
-	while (1)
+	*num1 = *num2;
+	*num2 = tmp;
+}
+
+/**
+ * partition - find partiton position
+ * @array: array of integer
+ * @low: lower bound of array
+ * @high: higher bound of array
+ * @size: number of elements in @array
+ *
+ * Return: position of pivot
+ */
+int partition(int *array, int low, int high, size_t size)
+{
+	/* select the rightmost element as pivot */
+	int pivot = array[high];
+	/* pointer for grater element */
+	int i = low;
+	int j = high;
+	/*
+	 * traverse across each element in array and
+	 * compare them with pivot
+	 */
+
+	while (i < j)
 	{
-		do {
+		while (array[i] < pivot && i < high)
 			i++;
-		} while (array[i] < pivot);
-		do {
+		while (array[j] > pivot)
 			j--;
-		} while (array[j] > pivot);
-		if (i >= j)
-			return (i);
-		if (i != j)
+		if (i < j)
 		{
-			tmp = array[i];
-			array[i] = array[j];
-			array[j] = tmp;
+			/*
+			 * if element at point i is smaller and  element at point j
+			 * is greater  than pivot is found swap the two element
+			 */
+			swap(&array[i], &array[j]);
 			print_array(array, size);
 		}
 	}
-	return (0);
+
+	if (j != i)
+	{
+		/* swap the pivot element withe the element at j */
+		swap(&array[j], &array[high]);
+		print_array(array, size);
+	}
+	return (j);
 }
 
 /**
- * quick_recursion - helper function for Quicksort
- * @array: array to sort
- * @left: index of the left element
- * @right: index of the right element
- * @size: size of the array
+ * quicksort - quick sort with recursion
+ * @array: array of integer
+ * @low: lower bound of array
+ * @high: higher bound of array
+ * @size: number of elements in @array
  */
-void quick_recursion(int *array, int left, int right, size_t size)
+void quicksort(int *array, int low, int high, size_t size)
 {
-	int piv;
+	int pivot;
 
-	if (left < right)
+	if (low < high)
 	{
-		piv = partition(array, left, right, size);
-		quick_recursion(array, left, piv - 1, size);
-		quick_recursion(array, piv, right, size);
+		pivot = partition(array, low, high, size);
+		quicksort(array, low, pivot - 1, size);
+		quicksort(array, pivot + 1, high, size);
 	}
 }
 
 /**
- * quick_sort_hoare - sorts an array with the Quicksort algorithm
- * @array: array of ints to sort
- * @size: size of the array
+ * quick_sort_hoare - quick sorts an array
+ * @array: array to sort
+ * @size: size of array
  */
 void quick_sort_hoare(int *array, size_t size)
 {
-	if (size < 2)
+	if (array == NULL || size < 2)
 		return;
-
-	quick_recursion(array, 0, (int)size - 1, size);
+	quicksort(array, 0, size - 1, size);
 }
